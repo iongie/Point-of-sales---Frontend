@@ -1,0 +1,151 @@
+<div class="row">
+  <div class="col-md-12 mt-2">
+      <div class="card">
+          <div class="card-header">
+              <strong>Product Form</strong>
+          </div>
+          <form  
+              class="form-horizontal"
+              #f="ngForm" 
+              name="form"
+              autocomplete="off"
+              (submit)="f.form.valid && onSubmit()">
+
+              <div class="card-body">
+                <div class="col-md-12 mb-1">
+                  <div 
+                    class="rounded z-depth-2 mr-auto ml-auto position-relative d-block"
+                    style="
+                    width: 250px; 
+                    height: 250px; 
+                    background-color: darkcyan;">
+                      <img 
+                      class="rounded z-depth-2 mr-auto ml-auto d-block" 
+                      style="
+                      width: 250px; 
+                      height: 250px; "
+                      [src]="imgURL"
+                      data-holder-rendered="true">
+
+                      <input type="file" id="image" name="image"  (change)="onFile($event)" />
+                      <label for="image" class="
+                      rounded-circle 
+                      z-depth-2">
+                        <i 
+                          class="fa fa-pencil fa-10x" 
+                          aria-hidden="true"
+                          style="
+                          font-size: 32px;
+                          color: white;
+                          margin-top: 16px;
+                          margin-left: 16px;"></i>
+                      </label>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">Name</label>
+                    <div class="col-md-9">
+                          <input 
+                          type="text" 
+                          id="name" 
+                          name="name"
+                          [(ngModel)]="dataProduct.name"
+                          class="form-control"
+                          [ngClass]="{ 'is-invalid': f.submitted && name.invalid }"
+                          required
+                          #name="ngModel">
+                          <div *ngIf="f.submitted && name.invalid" class="invalid-feedback">
+                              <div  *ngIf="name.errors.required" >
+                                Name is request.
+                              </div>
+                          </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label">Price</label>
+                  <div class="col-md-9">
+                      <input 
+                      type="text" 
+                      id="price" 
+                      name="price"
+                      [(ngModel)]="dataProduct.price"
+                      class="form-control"
+                      [ngClass]="{ 'is-invalid': f.submitted && price.invalid }"
+                      required
+                      #price="ngModel">
+                      <div *ngIf="f.submitted && price.invalid" class="invalid-feedback">
+                          <div  *ngIf="price.errors.required" >
+                              price is request.
+                          </div>
+                      </div>
+                  </div>
+                </div>
+
+
+                <div class="form-group row">
+                  <label class="col-md-3">Category</label>
+                  <div class="col-md-9">
+                    <select 
+                    class="form-control" 
+                    id="productCategory"
+                    name="productCategory"
+                    [(ngModel)]="dataProduct.productCategory"
+                    class="form-control"
+                    [ngClass]="{ 'is-invalid': f.submitted && dataProduct.productCategory == 0 }"
+                    required
+                    #productCategory="ngModel">
+                    <option value="0">Choose your option</option>
+                      <option *ngFor="let productCategories of productCategories"  value="{{productCategories.productCategoryId}}">{{productCategories.productCategoryName}}</option>
+                    </select>
+                    <div *ngIf="f.submitted && dataProduct.productCategory == 0" class="invalid-feedback">
+                          <div *ngIf="dataProduct.productCategory == 0" >
+                            productCategory type is request.
+                          </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3">Kitchen type</label>
+                  <div class="col-md-9">
+                    <select 
+                    class="form-control" 
+                    id="kitchenType"
+                    name="kitchenType"
+                    [(ngModel)]="dataProduct.kitchenType"
+                    class="form-control"
+                    [ngClass]="{ 'is-invalid': f.submitted && dataProduct.kitchenType == 0 }"
+                    required
+                    #kitchenType="ngModel">
+                    <option value="0">Choose your option</option>
+                      <option *ngFor="let kitchenTypes of kitchenTypes"  value="{{kitchenTypes.kitchenTypeId}}">{{kitchenTypes.kitchenTypeName}}</option>
+                    </select>
+                    <div *ngIf="f.submitted && dataProduct.kitchenType == 0" class="invalid-feedback">
+                          <div *ngIf="dataProduct.kitchenType == 0" >
+                            productCategory type is request.
+                          </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                  <!-- <button type="submit" [disabled]="!f.form.valid" class="btn btn-sm btn-primary"><i class="fa fa-dot-circle-o"></i> Submit</button> -->
+                  <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-dot-circle-o"></i> Update</button>
+                  <button type="reset" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i> Reset</button>
+                  <button type="button" (click)="goToList()" class="btn btn-sm btn-success"><i class="fa fa-list"></i> List</button>
+                  <div class="col-md-12" style="margin-top: 10px;">
+                      <!-- <alert type="success" *ngIf="alertNotifSuccess == true">
+                          <strong>Done!</strong> You successfully created data.
+                      </alert> -->
+
+                      <alert type="danger" *ngIf="alertNotifNotSuccess == true">
+                      <strong>Failed!</strong> You failed to create data.
+                      </alert>
+                  </div>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>

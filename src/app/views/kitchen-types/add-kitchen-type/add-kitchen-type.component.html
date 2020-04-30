@@ -1,0 +1,53 @@
+<div class="row">
+  <div class="col-md-12 mt-2">
+      <div class="card">
+          <div class="card-header">
+              <strong>Kitchen Type Form</strong>
+          </div>
+          <form  
+              class="form-horizontal"
+              #f="ngForm" 
+              name="form"
+              autocomplete="off"
+              (submit)="f.form.valid && onSubmit()">
+
+              <div class="card-body">
+                 <div class="form-group row">
+                      <label class="col-md-3 col-form-label">Name</label>
+                      <div class="col-md-9">
+                           <input 
+                           type="text" 
+                           id="name" 
+                           name="name"
+                           [(ngModel)]="dataKitchenType.name"
+                           class="form-control"
+                           [ngClass]="{ 'is-invalid': f.submitted && name.invalid }"
+                           required
+                           #name="ngModel">
+                           <div *ngIf="f.submitted && name.invalid" class="invalid-feedback">
+                                <div  *ngIf="name.errors.required" >
+                                  Name is request.
+                                </div>
+                           </div>
+                      </div>
+                 </div>
+              </div>
+              <div class="card-footer">
+                  <!-- <button type="submit" [disabled]="!f.form.valid" class="btn btn-sm btn-primary"><i class="fa fa-dot-circle-o"></i> Submit</button> -->
+                  <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-dot-circle-o"></i> Submit</button>
+                  <button type="reset" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i> Reset</button>
+                  <button type="button" (click)="goToList()" class="btn btn-sm btn-success"><i class="fa fa-list"></i> List</button>
+                  <div class="col-md-12" style="margin-top: 10px;">
+                      <!-- <alert type="success" *ngIf="alertNotifSuccess == true">
+                          <strong>Done!</strong> You successfully created data.
+                      </alert> -->
+
+                      <alert type="danger" *ngIf="alertNotifNotSuccess == true">
+                      <strong>Failed!</strong> You failed to create data.
+                      </alert>
+                  </div>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>

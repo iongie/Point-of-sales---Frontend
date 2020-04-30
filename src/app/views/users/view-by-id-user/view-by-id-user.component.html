@@ -1,0 +1,187 @@
+<div class="row">
+  <div class="col-md-12 mt-2">
+      <div class="card">
+          <div class="card-header">
+              <strong>User Form</strong>
+          </div>
+          <form  
+              class="form-horizontal"
+              #f="ngForm" 
+              name="form"
+              autocomplete="off"
+              (submit)="f.form.valid && onSubmit()">
+
+              <div class="card-body">
+                <div class="col-md-12 mb-1">
+                  <div 
+                    class="rounded z-depth-2 mr-auto ml-auto position-relative d-block"
+                    style="
+                    width: 250px; 
+                    height: 250px; 
+                    background-color: darkcyan;">
+                      <img 
+                      class="rounded z-depth-2 mr-auto ml-auto d-block" 
+                      style="
+                      width: 250px; 
+                      height: 250px; "
+                      [src]="imgURL"
+                      data-holder-rendered="true">
+
+                      <input type="file" id="image" name="image"  (change)="onFile($event)" />
+                      <label for="image" class="
+                      rounded-circle 
+                      z-depth-2">
+                        <i 
+                          class="fa fa-pencil fa-10x" 
+                          aria-hidden="true"
+                          style="
+                          font-size: 32px;
+                          color: white;
+                          margin-top: 16px;
+                          margin-left: 16px;"></i>
+                      </label>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">Name</label>
+                    <div class="col-md-9">
+                          <input 
+                          type="text" 
+                          id="name" 
+                          name="name"
+                          [(ngModel)]="dataUser.name"
+                          class="form-control"
+                          [ngClass]="{ 'is-invalid': f.submitted && name.invalid }"
+                          required
+                          #name="ngModel">
+                          <div *ngIf="f.submitted && name.invalid" class="invalid-feedback">
+                              <div  *ngIf="name.errors.required" >
+                                Name is request.
+                              </div>
+                          </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label">Username</label>
+                  <div class="col-md-9">
+                      <input 
+                      type="text" 
+                      id="username" 
+                      name="username"
+                      [(ngModel)]="dataUser.username"
+                      class="form-control"
+                      [ngClass]="{ 'is-invalid': f.submitted && username.invalid }"
+                      required
+                      #username="ngModel">
+                      <div *ngIf="f.submitted && username.invalid" class="invalid-feedback">
+                          <div  *ngIf="username.errors.required" >
+                              Username is request.
+                          </div>
+                      </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label">Password</label>
+                  <div class="col-md-9">
+                      <input 
+                      type="password" 
+                      id="password" 
+                      name="password"
+                      [(ngModel)]="dataUser.password"
+                      class="form-control"
+                      [ngClass]="{ 'is-invalid': f.submitted && password.invalid }"
+                      required
+                      #password="ngModel">
+                      <div *ngIf="f.submitted && password.invalid" class="invalid-feedback">
+                          <div  *ngIf="password.errors.required" >
+                          password is request.
+                          </div>
+                      </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label">Email</label>
+                  <div class="col-md-9">
+                    <input 
+                    type="email" 
+                    id="email" 
+                    name="email"
+                    [(ngModel)]="dataUser.email"
+                    class="form-control"
+                    [ngClass]="{ 'is-invalid': f.submitted && email.invalid }"
+                    required
+                    #email="ngModel">
+                    <div *ngIf="f.submitted && email.invalid" class="invalid-feedback">
+                        <div  *ngIf="email.errors.required" >
+                          Email is request.
+                        </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label">Address</label>
+                  <div class="col-md-9">
+                    <textarea 
+                    id="address" 
+                    name="address"
+                    [(ngModel)]="dataUser.address"
+                    class="form-control"
+                    [ngClass]="{ 'is-invalid': f.submitted && address.invalid }"
+                    required
+                    #address="ngModel">
+                    </textarea>
+                    <div *ngIf="f.submitted && address.invalid" class="invalid-feedback">
+                        <div  *ngIf="address.errors.required" >
+                          Address is request.
+                        </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3">Privilege type</label>
+                  <div class="col-md-9">
+                    <select 
+                    class="form-control" 
+                    id="privilege"
+                    name="privilege"
+                    [(ngModel)]="dataUser.privilege"
+                    class="form-control"
+                    [ngClass]="{ 'is-invalid': f.submitted && dataUser.privilege == 0 }"
+                    required
+                    #privilege="ngModel">
+                    <option value="0">Choose your option</option>
+                      <option *ngFor="let privileges of privileges"  value="{{privileges.privilegeId}}">{{privileges.name}}</option>
+                    </select>
+                    <div *ngIf="f.submitted && dataUser.privilege == 0" class="invalid-feedback">
+                          <div *ngIf="dataUser.privilege == 0" >
+                            privilege type is request.
+                          </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                  <!-- <button type="submit" [disabled]="!f.form.valid" class="btn btn-sm btn-primary"><i class="fa fa-dot-circle-o"></i> Submit</button> -->
+                  <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-dot-circle-o"></i> Update</button>
+                  <button type="reset" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i> Reset</button>
+                  <button type="button" (click)="goToList()" class="btn btn-sm btn-success"><i class="fa fa-list"></i> List</button>
+                  <div class="col-md-12" style="margin-top: 10px;">
+                      <!-- <alert type="success" *ngIf="alertNotifSuccess == true">
+                          <strong>Done!</strong> You successfully created data.
+                      </alert> -->
+
+                      <alert type="danger" *ngIf="alertNotifNotSuccess == true">
+                      <strong>Failed!</strong> You failed to create data.
+                      </alert>
+                  </div>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>

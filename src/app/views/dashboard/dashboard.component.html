@@ -1,0 +1,92 @@
+<div class="row">
+  <div class="cart" *ngIf="orders.length > 0 && statusOrder !== null">
+    <button type="button" class="btn btn-default" aria-label="Left Align" (click)="toCart()">
+      <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+
+<div class="row">
+  <div class="dine-in-table" *ngIf="activeDineInTable">
+    <button type="button" class="btn btn-default" aria-label="Left Align" (click)="lgModal.show()">
+      <i class="fa fa-table" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+
+<div bsModal #lgModal="bs-modal" class="modal fade" tabindex="-1"
+     role="dialog" aria-labelledby="dialog-sizes-name1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-sizes-name1" class="modal-title pull-left">Dine in table</h4>
+        <button type="button" class="close pull-right" (click)="lgModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body example-boundary">
+        <div class="example-box" 
+          *ngFor="let diningTable of diningTable; let i = index"
+          cdkDragBoundary=".example-boundary" 
+          cdkDrag
+          #item
+          (cdkDragEnded)="dragEnd($event)"
+          [style.top.px]="initialPosition.y"
+          [style.left.px]="initialPosition.x"
+          [style]="diningTable.diningStyle"
+          (click)="diningTableAction(diningTable)">
+          {{diningTable.diningTableName}}
+          <div class="example-handle" cdkDragHandle>
+            <svg width="24px" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path>
+              <path d="M0 0h24v24H0z" fill="none"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-3 mt-3 justify-content-end">
+  <div class="col-md-4">
+    <input type="text" placeholder="Search" class="form-control" name="filterData" id="filterData" [(ngModel)]="filterData" (ngModelChange)="actionFilter($event)">
+  </div>
+</div>
+<div class="row">
+  <div class="col-xl-12">
+   <div class="section-title text-center mb-60">
+    <p>Famous for good food</p>
+    <h4>our menu</h4>
+   </div>
+  </div>
+</div>
+<div class="row mt-5">
+  <ul class="nav nav-tabs menu_tab" id="myTab" role="tablist">
+   <li class="nav-item" *ngFor="let orderStatus of orderStatus; let i = index">
+    <a class="nav-link" [ngClass]="{'active': orderStatus.orderStatusActive}" id="breakfast-tab" href="#" (click)="orderStatusAction(i, orderStatus)">{{orderStatus.orderStatusName}}</a>
+   </li>
+  </ul>
+</div>
+<div class="row mt-5">
+  <div class="col-lg-6" *ngFor="let product of product; let i = index">
+    <div class="single_menu_list" style="cursor: pointer;">
+      <img [src]="envImageUrl+product.image" alt="" (click)="orderProduct(product, 1)">
+      <div class="menu_content">
+        <h4 (click)="orderProduct(product, 1)">
+          {{product.displayName}}
+          <span>Rp. {{product.price}}</span>
+          <i [ngClass]="{'fa-check-circle': product.productChecked}" style="color: green;" class="fa" aria-hidden="true"></i>
+        </h4>
+        <div class="row">
+          <div class="col-4">
+            <input type="number" disabled class="form-control text-center" name="prductQty" id="prductQty" min="0" [(ngModel)]="product.prductQty">
+          </div>
+          <div class="col-4">
+            <i [ngClass]="{'fa-times-circle deleteProduct': product.productChecked}" class="fa" (click)="deleteProduct(product, i)" aria-hidden="true"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

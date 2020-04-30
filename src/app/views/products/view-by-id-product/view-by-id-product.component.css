@@ -1,0 +1,14 @@
+[type="file"] {
+  height: 0;
+  overflow: hidden;
+  width: 0;
+}
+
+[type="file"] + label {
+  background-color: darkcyan;
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  right: 8px;
+  bottom: 8px;
+}

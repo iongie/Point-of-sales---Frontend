@@ -1,0 +1,60 @@
+<div class="row">
+  <div class="cart" *ngIf="orders.length > 0">
+    <button type="button" class="btn btn-default" aria-label="Left Align" (click)="toPayment()">
+      <i class="fa fa-money" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+
+<div class="row">
+  <div class="shop" *ngIf="orders.length == 0">
+    <button type="button" class="btn btn-default" aria-label="Left Align" (click)="toShop()">
+      <i class="fa fa-shopping-bag" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+
+<div class="col-md-12 mt-4" style="background-color: white; height: 90vh;
+  overflow-x:auto">
+    <table id="cart" class="table table-hover table-condensed">
+      <thead class="position-sticky">
+        <tr>
+          <th style="width:50%">Product</th>
+          <th style="width:10%">Price</th>
+          <th style="width:8%">Quantity</th>
+          <th style="width:22%" class="text-center">Subtotal</th>
+          <th style="width:10%">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let orders of orders; let i = index">
+          <td data-th="Product">
+            <div class="row">
+              <div class="col-md-2 mr-auto"><img class="rounded" style="width: 100px; height: 100px; " [src]="imgURL+orders.image" alt="..." class="img-responsive"/></div>
+              <div class="col-lg-9 col-sm-12">
+                <h4>{{orders.displayName}}</h4>
+                <!-- <p>Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet.</p> -->
+              </div>
+            </div>
+          </td>
+          <td data-th="Price">{{orders.price |currency:'IDR':'symbol'}}</td>
+          <td data-th="Quantity" class="text-center">
+            <input type="number" class="form-control text-center" name="qty" id="qty" [(ngModel)]="orders.qty" (change)="updateQty(i)">
+          </td>
+          <td data-th="Subtotal" class="text-center">{{orders.subTotal  |currency:'IDR':'symbol'}}</td>
+          <td class="actions" data-th="">
+            <button class="btn btn-danger btn-sm" (click)="deleteOrder(i)"><i class="fa fa-trash-o"></i></button>								
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="visible-xs">
+          <td class="text-center"><strong>Total {{totalOrder  |currency:'IDR':'symbol'}}</strong></td>
+        </tr>
+        <tr>
+          <td colspan="3" class="hidden-xs"></td>
+          <td class="hidden-xs text-center"><strong>Total {{totalOrder  |currency:'IDR':'symbol'}}</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>

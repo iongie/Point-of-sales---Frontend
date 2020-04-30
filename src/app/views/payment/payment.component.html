@@ -1,0 +1,62 @@
+<div class="row">
+  <div class="cart" *ngIf="orders.length > 0">
+    <button type="button" class="btn btn-default" aria-label="Left Align" (click)="toShop()">
+      <i class="fa fa-shopping-bag" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+
+<div class="row mt-5">
+  <ul class="nav nav-tabs menu_tab" id="myTab" role="tablist">
+   <li class="nav-item" *ngFor="let paymentType of paymentType; let i = index">
+    <a class="nav-link" [ngClass]="{'active': paymentType.paymentTypeStatusActive}" id="breakfast-tab" (click)="paymentTypeAction(i)">{{paymentType.paymentTypeName}}</a>
+   </li>
+  </ul>
+</div>
+
+<div class="mt-4" *ngIf="paymentTypeId == 0 || paymentTypeId == 1">
+  <div class="form-group">
+    <label for="username">Bank Name</label>
+    <input type="text" class="form-control" name="bankName" id="bankName" [(ngModel)]="ref.bankName">
+  </div>
+  <div class="form-group">
+    <label for="cardNumber">Card number</label>
+    <div class="input-group">
+      <input type="text" class="form-control" name="bankNumber" id="bankNumber" [(ngModel)]="ref.bankNumber">
+      <div class="input-group-append">
+        <span class="input-group-text text-muted">
+          <i class="fa fa-cc-visa"></i>   <i class="fa fa-cc-amex"></i>   
+          <i class="fa fa-cc-mastercard"></i> 
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="username">Amount</label>
+    <input type="text" class="form-control" name="amount" id="amount" [(ngModel)]="amount">
+  </div>
+      
+  <button class="subscribe btn btn-primary btn-block" type="button"  (click)="confirmOrder(paymentTypeId)">
+    Confirm
+    <img *ngIf="loading" class="pl-2" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />  
+  </button>
+</div>
+
+<div class="mt-4" *ngIf="paymentTypeId == 2">
+  <div class="form-group">
+    <label for="username">Billing</label>
+    <input type="text" 
+      class="form-control" 
+      name="totalOrder"
+      id="totalOrder"
+      [(ngModel)]="totalOrder">
+  </div>
+  <div class="form-group">
+    <label for="username">Amount</label>
+    <input type="text" class="form-control" name="amount" id="amount" [(ngModel)]="amount">
+  </div>
+  <button class="subscribe btn btn-primary btn-block" type="button" (click)="confirmOrder(paymentTypeId)"> 
+    Confirm  
+    <img *ngIf="loading" class="pl-2" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+  </button>
+</div>

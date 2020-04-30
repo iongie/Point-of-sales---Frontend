@@ -1,0 +1,8 @@
+<div class="row mb-3">
+  <div class="col-md-4 pt-1">
+    <i class="fa fa-times" aria-hidden="true" style="cursor: pointer; margin-left: 5px;" (click)="disabledFilter()"></i>
+  </div>
+  <div class="col-md-4 offset-md-4">
+    <input type="text" placeholder="Search" class="form-control" name="filterData" id="filterData" [(ngModel)]="filterData" (ngModelChange)="actionFilter($event)">
+  </div>
+</div>

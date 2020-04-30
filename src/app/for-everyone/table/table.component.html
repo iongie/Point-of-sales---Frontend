@@ -1,0 +1,36 @@
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th *ngFor="let header of header">{{header}}</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of data | filter: filterData; let i = index">
+        <td [attr.data-title]="header[0]" [ngClass]="{'td-none':i == undifined, 'td-block':i != undifined}">{{i+1}}</td>
+        <td [attr.data-title]="header[1]" [ngClass]="{'td-none':data.tableOne == undifined, 'td-block':data.tableOne != undifined}">{{data.tableOne}}</td>
+        <td [attr.data-title]="header[2]" *ngIf="data.tableImage == undifined" [ngClass]="{'td-none':data.tableTwo == undifined, 'td-block':data.tableTwo != undifined}">{{data.tableTwo}}</td>
+        <td [attr.data-title]="header[2]" *ngIf="data.tableImage != undifined" [ngClass]="{'td-none':data.tableImage == undifined, 'td-block':data.tableImage != undifined}">
+          <img  style="height: 30px; width: 30px;" [src]="data.tableImage" class="rounded-circle z-depth-2">
+        </td>
+        <td [attr.data-title]="header[3]" [ngClass]="{'td-none':data.tableThree == undifined, 'td-block':data.tableThree != undifined}">{{data.tableThree}}</td>
+        <td [attr.data-title]="header[4]" [ngClass]="{'td-none':data.tableFour == undifined, 'td-block':data.tableFour != undifined}">{{data.tableFour}}</td>
+        <td [attr.data-title]="header[5]" [ngClass]="{'td-none':data.tableFive == undifined, 'td-block':data.tableFive != undifined}">{{data.tableFive}}</td>
+        <td [attr.data-title]="header[6]" [ngClass]="{'td-none':data.tableSix == undifined, 'td-block':data.tableSix != undifined}">{{data.tableSix}}</td>
+        <td [attr.data-title]="header[7]" [ngClass]="{'td-none':data.tableSeven == undifined, 'td-block':data.tableSeven != undifined}">{{data.tableSeven}}</td>
+        <td [attr.data-title]="header[8]" [ngClass]="{'td-none':data.tableEight == undifined, 'td-block':data.tableEight != undifined}">{{data.tableEight}}</td>
+        <td data-title="Action" class="td-block">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="update(data.idOne)"><i class="fa fa-pencil"></i></button>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="delete(data)"><i class="fa fa-trash"></i></button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="text-center" *ngIf="loadMoreButton">
+    <button type="button" class="btn btn-sm btn-success" (click)="loadMore()">
+        Load more
+        <img class="pl-2" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+    </button>
+  </div>
+</div>

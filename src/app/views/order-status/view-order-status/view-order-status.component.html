@@ -1,0 +1,14 @@
+<div class="row mt-4">
+  <div class="col-md-12">
+    <div class="card border-primary">
+      <div class="card-header bg-primary">
+        <strong>Order Status</strong>
+        <app-menu-table [url]="url" (conditionEvent)="receiveEvent($event)"></app-menu-table>
+      </div>
+      <div class="card-body">
+        <app-search-data *ngIf="searchEvent" (filter)="ngOnFilter($event)" (disabledfilters)="disabledFilter($event)"></app-search-data>
+        <app-table [header]="header" (updateKey)="dataUpdate($event)" (deleteKey)="dataDelete($event)"></app-table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -27,8 +27,11 @@
       <div class="modal-body example-boundary">
         <div class="example-box" 
           *ngFor="let diningTable of diningTable; let i = index"
-          [ngStyle]="{transform: diningTable.diningTablePosition}">
+          style="cursor: pointer;"
+          [ngStyle]="{transform: diningTable.diningTablePosition}"
+          (click)="diningTableAction(i, diningTable)">
           {{diningTable.diningTableName}}
+          <i style="color: green;" [ngClass]="{'fa-check-circle': diningTable.diningTableActive}" class="fa" aria-hidden="true"></i>
         </div>
       </div>
     </div>

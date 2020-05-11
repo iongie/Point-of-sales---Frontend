@@ -159,7 +159,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       padding: CryptoJS.pad.Pkcs7
     });
     const localStorageKeyLocalStorage = localStorage.getItem(encryptedKey.toString());
-    console.log(localStorageKeyLocalStorage);
     
     if (localStorageKeyLocalStorage !== null) {
       let decryptedValue = CryptoJS.AES.decrypt(
@@ -213,7 +212,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       padding: CryptoJS.pad.Pkcs7
     });
     const localStorageKeyLocalStorage = localStorage.getItem(encryptedKey.toString());
-    console.log(localStorageKeyLocalStorage);
     
     if (localStorageKeyLocalStorage !== null) {
       let decryptedValue = CryptoJS.AES.decrypt(
@@ -251,6 +249,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           diningTableId: x.diningTableId,
           diningTableName: x.name,
           diningTablePosition: x.position,
+          diningTableActive: false,
         }
         return data;
       });
@@ -267,7 +266,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       padding: CryptoJS.pad.Pkcs7
     });
     const localStorageKeyLocalStorage = localStorage.getItem(encryptedKey.toString());
-    console.log(localStorageKeyLocalStorage);
     
     if (localStorageKeyLocalStorage !== null) {
       let decryptedValue = CryptoJS.AES.decrypt(
@@ -300,8 +298,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  diningTableAction(diningTable){
-    this.dineInTableOrder = diningTable.diningTableId;
+  diningTableAction(index, diningTable){
+    this.diningTable.map( xx => {
+      return xx.diningTableActive = false;
+    })
+    this.diningTable[index].diningTableActive = true;
+    const filterDiningTable = this.orderStatus.filter((x, i) => {
+      return i != index;
+    });
+    filterDiningTable.map( xx => {
+      return xx.diningTableActive = false;
+    })
+    this.dineInTableOrder = diningTable;
   }
 
   orderProduct(product, one) {
@@ -368,6 +376,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       orders: this.orders,
       orderDineInTable: this.dineInTableOrder   
     };
+    
     let encryptedId = CryptoJS.AES.encrypt(
     JSON.stringify(data), this.key, {
       keySize: 16,

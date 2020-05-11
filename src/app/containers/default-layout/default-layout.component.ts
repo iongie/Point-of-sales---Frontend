@@ -1,20 +1,29 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import { nav } from '../../_nav';
 import * as CryptoJS from 'crypto-js';
 import { environment } from '../../../environments/environment';
 import { SwUpdate } from '@angular/service-worker';
+import { Observable, Subscription, fromEvent, of } from 'rxjs';
+import { ConnectServerService } from '../../services/connect-server/connect-server.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './default-layout.component.html'
 })
-export class DefaultLayoutComponent implements OnInit {
+export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public sidebarMinimized = false;
   public navItems: any;
   tokenCrypto= environment.tokenCrypto;
 
+  onlineEvent: Observable<Event>;
+  offlineEvent: Observable<Event>;
+  subscriptions: Subscription[] = [];
+
   constructor(
-    private swUpdate: SwUpdate
+    private swUpdate: SwUpdate,
+    private connectServerServ: ConnectServerService,
+    private router: Router
   ) {
 
   }
@@ -24,7 +33,11 @@ export class DefaultLayoutComponent implements OnInit {
 
   ngOnInit() {
     this.navigation();
-    
+    this.statusConnection();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   checkSW() {
@@ -35,6 +48,51 @@ export class DefaultLayoutComponent implements OnInit {
         }
       });
     }  
+  }
+
+  statusConnection() {
+    this.onlineEvent = fromEvent(window, 'online');
+    this.offlineEvent = fromEvent(window, 'offline');
+    this.subscriptions.push(this.onlineEvent.subscribe(e => {
+      console.log('Online...');
+
+      const keyCUD = [
+        'add_dining_table',
+        'update_dining_table',
+        'delete_dining_table',
+        'add_kitchen_type',
+        'update_kitchen_type',
+        'delete_kitchen_type',
+        'add_order_status',
+        'update_order_status',
+        'delete_order_status',
+        'add_payment_type',
+        'update_payment_type',
+        'delete_payment_type',
+        'add_privilege',
+        'update_privilege',
+        'delete_privilege',
+        'add_product_category',
+        'update_product_category',
+        'delete_product_category',
+        'add_product',
+        'update_product',
+        'delete_product',
+        'add_user',
+        'update_user',
+        'delete_user',
+        'add_order'
+      ]
+
+      keyCUD.map(x => {
+        this.connectServerServ.saveOnlineOfOfflineData(x);
+      })
+
+    }));
+
+    this.subscriptions.push(this.offlineEvent.subscribe(e => {
+      console.log('Offline...');
+    }));
   }
 
   navigation() {
@@ -61,5 +119,11 @@ export class DefaultLayoutComponent implements OnInit {
       return data !== false;
     })
     this.navItems = navItemNoUndifined; 
+  }
+
+  logout(){
+    of(localStorage.clear()).toPromise().then(()=> {
+      this.router.navigate(['login']);
+    })
   }
 }

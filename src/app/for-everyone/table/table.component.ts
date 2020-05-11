@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as CryptoJS from 'crypto-js';
 import { ConnectServerService } from '../../services/connect-server/connect-server.service';
-import { Subject } from 'rxjs';
+import { Subject, Observable, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
@@ -23,27 +23,58 @@ export class TableComponent implements OnInit, OnDestroy {
   filterData;
 
   private subs = new Subject<any>();
+
+  onlineEvent: Observable<Event>;
+  offlineEvent: Observable<Event>;
+  subscriptions: Subscription[] = [];
   constructor(
     private connectServ: ConnectServerService
   ) { }
 
   ngOnInit(): void {
-    this.read();
+    if(!navigator.onLine){
+      this.readOffline();
+    } else if(navigator.onLine){
+      this.read();
+    }
+    
     this.connectServ.filterData$.pipe(takeUntil(this.subs)).subscribe(resFilter => {
       this.filterData = resFilter;
     })
+    
+  }
+
+  statusConnection(){
+    this.onlineEvent = fromEvent(window, 'online');
+    this.offlineEvent = fromEvent(window, 'offline');
+    this.subscriptions.push(this.onlineEvent.subscribe(e => {
+      this.read();
+    }));
+
+    this.subscriptions.push(this.offlineEvent.subscribe(e => {
+      this.readOffline();
+    }));
   }
 
   ngOnDestroy() {
     this.subs.next();
     this.subs.complete();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   read() {
     this.connectServ.changeData$.pipe(takeUntil(this.subs)).subscribe(res => {
-      // this.data = res;
-
       this.itemData= res;
+      this.page = 15;
+      this.data = this.itemData.slice(0, this.page);
+      
+      this.buttonLoadMore(this.data, this.itemData, this.page);
+    })
+  }
+
+  readOffline() {
+    this.connectServ.dataOfLocal$.subscribe(resOnline => {
+      this.itemData= resOnline;
       this.page = 15;
       this.data = this.itemData.slice(0, this.page);
       

@@ -31,10 +31,6 @@ export class AddProductCategoryComponent implements OnDestroy {
     this.connectServ.profile$.pipe(take(1)).subscribe(res => {
       of(this.data(res[0].profileId)).subscribe(()=> {
         this.router.navigate(['/product-category']);
-        this.toastr.success('Added data product category successfully', 'Done', {
-          timeOut: 1000,
-          positionClass: 'toast-bottom-center'
-        });
       })
     })
     this.connectServ.readDataProfile();
@@ -43,6 +39,7 @@ export class AddProductCategoryComponent implements OnDestroy {
   data(profileId) {
     let sendData = {
       numberOfTable: 1,
+      response: "response-add-product-category",
       action: {
         table: 'add',
         upload: false,
@@ -61,12 +58,19 @@ export class AddProductCategoryComponent implements OnDestroy {
             processAddJoin: false,
             addMultiJoin: false,
           },
-          response: "response-add-product-category"
+          response: "response-add-product-category",
+          toast: {
+            name:  "response-add-product-category",
+            type: 'add-non-join',
+            messageToastSuccess: 'Added data product category successfully',
+            messageToastError: 'Added data product category not successfully'
+          }
         },
         {
           table:"history_app",
           data: {
             date:  this.datePipe.transform(this.dateHistory, 'yyyy-MM-dd'),
+            time: this.datePipe.transform(this.dateHistory, 'h:mm:ss a'),
             description: "Added data product category"
           },
           condition: {
@@ -76,6 +80,12 @@ export class AddProductCategoryComponent implements OnDestroy {
             addMultiJoin: true,
           },
           response: "response-add-history",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
           result: null,
           sendCreateJoinId: {
             key: 0,
@@ -93,7 +103,13 @@ export class AddProductCategoryComponent implements OnDestroy {
             read: false,
             insertId: false
           },
-          response: "response-add-history-profile"
+          response: "response-add-history-profile",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         }
       ],
       read: {
@@ -104,8 +120,11 @@ export class AddProductCategoryComponent implements OnDestroy {
         filePath: "productCategory.json"
       },
     };
-    console.log(sendData);
-    this.connectServ.read(sendData)
+    if(navigator.onLine) {
+      this.connectServ.read(sendData)
+    } else if (!navigator.onLine) {
+      this.connectServ.saveOfflineData('add_product_category', sendData);
+    }
   }
 
   goToList(){

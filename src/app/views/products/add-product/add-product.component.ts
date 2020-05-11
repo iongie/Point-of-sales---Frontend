@@ -112,12 +112,8 @@ export class AddProductComponent implements OnInit, OnDestroy {
           this.dataProduct.image = 'placeholder.jpg';
         }
         
-        of(this.data(res[0].profileId)).pipe(takeUntil(this.subs)).subscribe(()=> {
+        of(this.data(res[0].profileId)).pipe(take(1)).subscribe(()=> {
           this.router.navigate(['/product']);
-          this.toastr.success('Added data product successfully', 'Done', {
-            timeOut: 1000,
-            positionClass: 'toast-bottom-center'
-          });
         })
       }
     })
@@ -127,6 +123,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
   data(profileId) {
     let sendData = {
       numberOfTable: 1,
+      response: "response-add-product-category-kitchen",
       action: {
         table: 'add',
         upload: true,
@@ -148,6 +145,12 @@ export class AddProductComponent implements OnInit, OnDestroy {
             addMultiJoin: false,
           },
           response: "response-add-product",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
           result: null,
           sendCreateJoinId: {
             key: 1,
@@ -158,6 +161,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
           table:"history_app",
           data: {
             date:  this.datePipe.transform(this.dateHistory, 'yyyy-MM-dd'),
+            time: this.datePipe.transform(this.dateHistory, 'h:mm:ss a'),
             description: "Added data product"
           },
           condition: {
@@ -167,6 +171,12 @@ export class AddProductComponent implements OnInit, OnDestroy {
             addMultiJoin: true,
           },
           response: "response-add-history",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
           result: null,
           sendCreateJoinId: {
             key: 0,
@@ -184,7 +194,13 @@ export class AddProductComponent implements OnInit, OnDestroy {
             read: false,
             insertId: false
           },
-          response: "response-add-history-profile"
+          response: "response-add-history-profile",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         },
         {
           table: "product_category_kitchen",
@@ -196,7 +212,13 @@ export class AddProductComponent implements OnInit, OnDestroy {
             read: true,
             insertId: false
           },
-          response: "response-add-auth-profile-privilege"
+          response: "response-add-product-category-kitchen",
+          toast: {
+            name:  "response-add-product-category-kitchen",
+            type: 'add-join',
+            messageToastSuccess: 'Added data product successfully',
+            messageToastError: 'Added data product not successfully'
+          },
         }
       ],
       read: {
@@ -209,10 +231,15 @@ export class AddProductComponent implements OnInit, OnDestroy {
       },
       upload: {
         filePath: this.dataProduct.image,
-        selectedFile: this.dataProduct.selectedFile
+        selectedFile: this.dataProduct.selectedFile,
+        base64: this.imgURL
       }
     };
-    this.connectServ.read(sendData)
+    if(navigator.onLine) {
+      this.connectServ.read(sendData)
+    } else if (!navigator.onLine) {
+      this.connectServ.saveOfflineData('add_product', sendData);
+    }
   }
 
   goToList(){

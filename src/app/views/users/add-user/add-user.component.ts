@@ -101,10 +101,6 @@ export class AddUserComponent implements OnInit, OnDestroy {
         let password =  encrypted.toString();
         of(this.data(res[0].profileId, password)).pipe(takeUntil(this.subs)).subscribe(()=> {
           this.router.navigate(['/user']);
-          this.toastr.success('Added data user successfully', 'Done', {
-            timeOut: 1000,
-            positionClass: 'toast-bottom-center'
-          });
         })
       }
     })
@@ -114,6 +110,7 @@ export class AddUserComponent implements OnInit, OnDestroy {
   data(profileId, password) {
     let sendData = {
       numberOfTable: 1,
+      response: "response-add-auth-profile-privilege",
       action: {
         table: 'add',
         upload: true,
@@ -134,6 +131,12 @@ export class AddUserComponent implements OnInit, OnDestroy {
             addMultiJoin: false,
           },
           response: "response-add-auth",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
           result: null,
           sendCreateJoinId: {
             key: 1,
@@ -155,6 +158,12 @@ export class AddUserComponent implements OnInit, OnDestroy {
             addMultiJoin: false,
           },
           response: "response-add-profile",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
           result: null,
           sendCreateJoinId: {
             key: 1,
@@ -165,6 +174,7 @@ export class AddUserComponent implements OnInit, OnDestroy {
           table:"history_app",
           data: {
             date:  this.datePipe.transform(this.dateHistory, 'yyyy-MM-dd'),
+            time: this.datePipe.transform(this.dateHistory, 'h:mm:ss a'),
             description: "Added data User"
           },
           condition: {
@@ -174,6 +184,12 @@ export class AddUserComponent implements OnInit, OnDestroy {
             addMultiJoin: true,
           },
           response: "response-add-history",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
           result: null,
           sendCreateJoinId: {
             key: 0,
@@ -191,7 +207,13 @@ export class AddUserComponent implements OnInit, OnDestroy {
             read: false,
             insertId: false
           },
-          response: "response-add-history-profile"
+          response: "response-add-history-profile",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         },
         {
           table: "auth_profile_privilege",
@@ -202,7 +224,13 @@ export class AddUserComponent implements OnInit, OnDestroy {
             read: true,
             insertId: false
           },
-          response: "response-add-auth-profile-privilege"
+          response: "response-add-auth-profile-privilege",
+          toast: {
+            name:  "response-add-auth-profile-privilege",
+            type: 'add-join',
+            messageToastSuccess: 'Added data user successfully',
+            messageToastError: 'Added data user not successfully'
+          },
         }
       ],
       read: {
@@ -215,10 +243,15 @@ export class AddUserComponent implements OnInit, OnDestroy {
       },
       upload: {
         filePath: this.dataUser.image,
-        selectedFile: this.dataUser.selectedFile
+        selectedFile: this.dataUser.selectedFile,
+        base64: this.imgURL
       }
     };
-    this.connectServ.read(sendData)
+    if(navigator.onLine) {
+      this.connectServ.read(sendData)
+    } else if (!navigator.onLine) {
+      this.connectServ.saveOfflineData('add_user', sendData);
+    }
   }
 
   goToList(){

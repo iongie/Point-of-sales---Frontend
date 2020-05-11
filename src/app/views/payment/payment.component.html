@@ -9,12 +9,12 @@
 <div class="row mt-5">
   <ul class="nav nav-tabs menu_tab" id="myTab" role="tablist">
    <li class="nav-item" *ngFor="let paymentType of paymentType; let i = index">
-    <a class="nav-link" [ngClass]="{'active': paymentType.paymentTypeStatusActive}" id="breakfast-tab" (click)="paymentTypeAction(i)">{{paymentType.paymentTypeName}}</a>
+    <a class="nav-link" [ngClass]="{'active': paymentType.paymentTypeStatusActive}" id="breakfast-tab" (click)="paymentTypeAction(i, paymentType.paymentTypeId)">{{paymentType.paymentTypeName}}</a>
    </li>
   </ul>
 </div>
 
-<div class="mt-4" *ngIf="paymentTypeId == 0 || paymentTypeId == 1">
+<div class="mt-4" *ngIf="paymentTypeIndex == 0 || paymentTypeIndex == 1">
   <div class="form-group">
     <label for="username">Bank Name</label>
     <input type="text" class="form-control" name="bankName" id="bankName" [(ngModel)]="ref.bankName">
@@ -42,7 +42,7 @@
   </button>
 </div>
 
-<div class="mt-4" *ngIf="paymentTypeId == 2">
+<div class="mt-4" *ngIf="paymentTypeIndex == 2">
   <div class="form-group">
     <label for="username">Billing</label>
     <input type="text" 
@@ -50,6 +50,10 @@
       name="totalOrder"
       id="totalOrder"
       [(ngModel)]="totalOrder">
+  </div>
+  <div class="form-group">
+    <label for="username">PPN</label>
+    <input type="text" class="form-control" name="ppn" id="ppn" [(ngModel)]="tax.ppn">
   </div>
   <div class="form-group">
     <label for="username">Amount</label>

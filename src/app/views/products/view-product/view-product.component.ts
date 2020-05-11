@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import * as CryptoJS from 'crypto-js';
-import { Subject, of } from 'rxjs';
+import { Subject, of, Observable, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 
 @Component({
@@ -24,6 +24,10 @@ export class ViewProductComponent implements OnInit, OnDestroy {
   tokenCrypto= environment.tokenCrypto;
   key = CryptoJS.enc.Utf8.parse(this.tokenCrypto);
   iv = CryptoJS.enc.Utf8.parse(this.tokenCrypto);
+
+  onlineEvent: Observable<Event>;
+  offlineEvent: Observable<Event>;
+  subscriptions: Subscription[] = [];
   constructor(
     public connectServ: ConnectServerService,
     private datePipe: DatePipe,
@@ -32,13 +36,32 @@ export class ViewProductComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.data();
-    this.read();
+    this.statusConnection();
+    if(navigator.onLine) {
+      this.data();
+      this.read();
+    } else if (!navigator.onLine) {
+      this.readOfflineData();
+    }
   }
 
   ngOnDestroy() {
     this.subs.next();
     this.subs.complete();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  statusConnection(){
+    this.onlineEvent = fromEvent(window, 'online');
+    this.offlineEvent = fromEvent(window, 'offline');
+    this.subscriptions.push(this.onlineEvent.subscribe(e => {
+      this.data();
+      this.read();
+    }));
+
+    this.subscriptions.push(this.offlineEvent.subscribe(e => {
+      this.readOfflineData();
+    }));
   }
 
   ngOnFilter(data) {
@@ -84,7 +107,52 @@ export class ViewProductComponent implements OnInit, OnDestroy {
         return data;
       });
       this.changeData(changeData);
+      this.offlineData(changeData);
     })
+  }
+
+  offlineData(changeData) {
+    let encryptedKey = CryptoJS.AES.encrypt(
+    JSON.stringify('view_product'), this.key, {
+      keySize: 16,
+      iv: this.iv,
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
+    });
+
+    let encryptedValue = CryptoJS.AES.encrypt(
+    JSON.stringify(changeData), this.key, {
+      keySize: 16,
+      iv: this.iv,
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
+    });
+
+    localStorage.setItem(encryptedKey.toString(), encryptedValue.toString());
+  }
+
+  readOfflineData() {
+    let encryptedKey = CryptoJS.AES.encrypt(
+      JSON.stringify('view_product'), this.key, {
+        keySize: 16,
+        iv: this.iv,
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+      });
+      const localStorageKeyLocalStorage = localStorage.getItem(encryptedKey.toString());
+      console.log(localStorageKeyLocalStorage);
+      
+      if (localStorageKeyLocalStorage !== null) {
+        let decryptedValue = CryptoJS.AES.decrypt(
+        localStorageKeyLocalStorage, this.key, {
+          keySize: 16,
+          iv: this.iv,
+          mode: CryptoJS.mode.ECB,
+          padding: CryptoJS.pad.Pkcs7
+        });
+        const dataOfLocal = JSON.parse(decryptedValue.toString(CryptoJS.enc.Utf8));
+        this.connectServ.localOfData(dataOfLocal);
+      }
   }
 
   changeData(data) {
@@ -133,6 +201,7 @@ export class ViewProductComponent implements OnInit, OnDestroy {
   actionDelete(ev, data, profileId){
     let sendDataDelete = {
       numberOfTable: 1,
+      response: "response-delete-product-category-kitchen",
       action: {
         table: "delete",
         upload: true,
@@ -144,14 +213,22 @@ export class ViewProductComponent implements OnInit, OnDestroy {
           table:"history_app",
           data: {
             date:  this.datePipe.transform(this.dateHistory, 'yyyy-MM-dd'),
+            time: this.datePipe.transform(this.dateHistory, 'h:mm:ss a'),
             description: "Deleted data Product"
           },
           condition: {
             read: false,
             insertId: true,
-            processAddJoin: true
+            processAddJoin: true,
+            addMultiJoin: true,
           },
           response: "response-add-history",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
           result: null,
           sendCreateJoinId: {
             key: 0,
@@ -169,6 +246,12 @@ export class ViewProductComponent implements OnInit, OnDestroy {
             processAddJoin: false
           },
           response: "response-add-recycle-bin",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         } 
       ],
       delete:[
@@ -181,7 +264,13 @@ export class ViewProductComponent implements OnInit, OnDestroy {
           condition: {
             read: false
           },
-          response: "response-delete-product"
+          response: "response-delete-product",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         },
         {
           table: "product_category_kitchen",
@@ -192,7 +281,13 @@ export class ViewProductComponent implements OnInit, OnDestroy {
           condition: {
             read: true
           },
-          response: "response-delete-product-category-kitchen"
+          response: "response-delete-product-category-kitchen",
+          toast: {
+            name:  "response-delete-product-category-kitchen",
+            type: 'delete',
+            messageToastSuccess: 'Delete data product successfully',
+            messageToastError: 'Delete data product not successfully'
+          },
         }
       ],
       createJoinId: [
@@ -205,7 +300,13 @@ export class ViewProductComponent implements OnInit, OnDestroy {
             read: false,
             insertId: false
           },
-          response: "response-add-history-profile"
+          response: "response-add-history-profile",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         }
       ],
       read: {
@@ -228,12 +329,12 @@ export class ViewProductComponent implements OnInit, OnDestroy {
         beforeImage: ev.image
       }
     };
-    of(this.connectServ.read(sendDataDelete)).pipe(take(1)).subscribe(()=> {
-      this.toastr.success('Deleted data product successfully', 'Done', {
-        timeOut: 1000,
-        positionClass: 'toast-bottom-center'
-      });
-    })
+    if(navigator.onLine) {
+      of(this.connectServ.read(sendDataDelete)).pipe(take(1)).subscribe(()=> {
+      })
+    } else if (!navigator.onLine) {
+      this.connectServ.saveOfflineData('delete_product', sendDataDelete);
+    }
   }
 
 }

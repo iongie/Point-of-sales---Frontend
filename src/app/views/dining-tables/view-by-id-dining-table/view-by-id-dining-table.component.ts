@@ -92,10 +92,6 @@ export class ViewByIdDiningTableComponent implements OnInit, OnDestroy {
         }).toString(CryptoJS.enc.Utf8);
         of(this.dataUpdate(paramsId, res[0].profileId)).pipe(takeUntil(this.subs)).subscribe(()=> {
           this.router.navigate(['/dining-table']);
-          this.toastr.success('Update data dining table successfully', 'Done', {
-            timeOut: 1000,
-            positionClass: 'toast-bottom-center'
-          });
         })
       });
     });
@@ -105,6 +101,7 @@ export class ViewByIdDiningTableComponent implements OnInit, OnDestroy {
   dataUpdate(paramsId, profileId) {
     let sendDataUpdate = {
       numberOfTable: 1,
+      response: "response-update-dining-table",
       action: {
         table: "update",
         upload: false,
@@ -116,14 +113,22 @@ export class ViewByIdDiningTableComponent implements OnInit, OnDestroy {
           table:"history_app",
           data: {
             date:  this.datePipe.transform(this.dateHistory, 'yyyy-MM-dd'),
+            time: this.datePipe.transform(this.dateHistory, 'h:mm:ss a'),
             description: "Updated data dining table"
           },
           condition: {
             read: false,
             insertId: true,
-            processAddJoin: true
+            processAddJoin: true,
+            addMultiJoin: true,
           },
           response: "response-add-history",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
           result: null,
           sendCreateJoinId: {
             key: 0,
@@ -142,20 +147,32 @@ export class ViewByIdDiningTableComponent implements OnInit, OnDestroy {
           condition: {
             read: false
           },
-          response: "response-update-dining-table"
+          response: "response-update-dining-table",
+          toast: {
+            name:  "response-update-dining-table",
+            type: 'update',
+            messageToastSuccess: 'Update data dining table successfully',
+            messageToastError: 'Update data dining table not successfully'
+          }
         }  
       ],
       createJoinId: [
         {
           table: "history_profile",
           data: {
-            profileId: profileId
+            profileId: profileId,
           },
           condition: {
             read: false,
             insertId: false
           },
-          response: "response-add-history-profile"
+          response: "response-add-history-profile",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         }
       ],
       read: {
@@ -166,7 +183,11 @@ export class ViewByIdDiningTableComponent implements OnInit, OnDestroy {
         filePath: "diningTable.json"
       }
     };
-    this.connectServ.read(sendDataUpdate)
+    if(navigator.onLine) {
+      this.connectServ.read(sendDataUpdate)
+    } else if (!navigator.onLine) {
+      this.connectServ.saveOfflineData('update_dining_table', sendDataUpdate);
+    }
   }
 
   goToList(){

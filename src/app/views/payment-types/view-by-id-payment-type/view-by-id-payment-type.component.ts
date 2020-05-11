@@ -92,10 +92,6 @@ tokenCrypto = environment.tokenCrypto;
         }).toString(CryptoJS.enc.Utf8);
         of(this.dataUpdate(paramsId, res[0].profileId)).pipe(takeUntil(this.subs)).subscribe(() => {
           this.router.navigate(['/payment-type']);
-          this.toastr.success('Update data payment type successfully', 'Done', {
-            timeOut: 1000,
-            positionClass: 'toast-bottom-center'
-          });
         })
       });
     });
@@ -105,6 +101,7 @@ tokenCrypto = environment.tokenCrypto;
   dataUpdate(paramsId, profileId) {
     let sendDataUpdate = {
       numberOfTable: 1,
+      response: "response-update-payment-type",
       action: {
         table: "update",
         upload: false,
@@ -116,14 +113,22 @@ tokenCrypto = environment.tokenCrypto;
           table: "history_app",
           data: {
             date: this.datePipe.transform(this.dateHistory, 'yyyy-MM-dd'),
+            time: this.datePipe.transform(this.dateHistory, 'h:mm:ss a'),
             description: "Updated data payment type"
           },
           condition: {
             read: false,
             insertId: true,
-            processAddJoin: true
+            processAddJoin: true,
+            addMultiJoin: true,
           },
           response: "response-add-history",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
           result: null,
           sendCreateJoinId: {
             key: 0,
@@ -142,7 +147,13 @@ tokenCrypto = environment.tokenCrypto;
           condition: {
             read: false
           },
-          response: "response-update-payment-type"
+          response: "response-update-payment-type",
+          toast: {
+            name:  "response-update-payment-type",
+            type: 'update',
+            messageToastSuccess: 'Update data payment type successfully',
+            messageToastError: 'Update data payment type not successfully'
+          }
         }
       ],
       createJoinId: [
@@ -155,7 +166,13 @@ tokenCrypto = environment.tokenCrypto;
             read: false,
             insertId: false
           },
-          response: "response-add-history-profile"
+          response: "response-add-history-profile",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         }
       ],
       read: {
@@ -166,7 +183,11 @@ tokenCrypto = environment.tokenCrypto;
         filePath: "paymentType.json"
       }
     };
-    this.connectServ.read(sendDataUpdate)
+    if(navigator.onLine) {
+      this.connectServ.read(sendDataUpdate)
+    } else if (!navigator.onLine) {
+      this.connectServ.saveOfflineData('update_payment_type', sendDataUpdate);
+    }
   }
 
   goToList() {

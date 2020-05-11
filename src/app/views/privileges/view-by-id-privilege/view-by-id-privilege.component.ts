@@ -92,10 +92,6 @@ export class ViewByIdPrivilegeComponent implements OnInit, OnDestroy {
         }).toString(CryptoJS.enc.Utf8);
         of(this.dataUpdate(paramsId, res[0].profileId)).pipe(takeUntil(this.subs)).subscribe(()=> {
           this.router.navigate(['/privilege']);
-          this.toastr.success('Update data privilege successfully', 'Done', {
-            timeOut: 10000,
-            positionClass: 'toast-bottom-center'
-          });
         })
       });
     });
@@ -105,6 +101,7 @@ export class ViewByIdPrivilegeComponent implements OnInit, OnDestroy {
   dataUpdate(paramsId, profileId) {
     let sendDataUpdate = {
       numberOfTable: 1,
+      response: "response-update-privilege",
       action: {
         table: "update",
         upload: false,
@@ -116,14 +113,22 @@ export class ViewByIdPrivilegeComponent implements OnInit, OnDestroy {
           table:"history_app",
           data: {
             date:  this.datePipe.transform(this.dateHistory, 'yyyy-MM-dd'),
+            time: this.datePipe.transform(this.dateHistory, 'h:mm:ss a'),
             description: "Updated data privilege"
           },
           condition: {
             read: false,
             insertId: true,
-            processAddJoin: true
+            processAddJoin: true,
+            addMultiJoin: true,
           },
           response: "response-add-history",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
           result: null,
           sendCreateJoinId: {
             key: 0,
@@ -142,7 +147,13 @@ export class ViewByIdPrivilegeComponent implements OnInit, OnDestroy {
           condition: {
             read: false
           },
-          response: "response-update-privilege"
+          response: "response-update-privilege",
+          toast: {
+            name:  "response-update-privilege",
+            type: 'update',
+            messageToastSuccess: 'Update data privilege successfully',
+            messageToastError: 'Update data privilege not successfully'
+          }
         }  
       ],
       createJoinId: [
@@ -155,7 +166,13 @@ export class ViewByIdPrivilegeComponent implements OnInit, OnDestroy {
             read: false,
             insertId: false
           },
-          response: "response-add-history-profile"
+          response: "response-add-history-profile",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         }
       ],
       read: {
@@ -166,7 +183,15 @@ export class ViewByIdPrivilegeComponent implements OnInit, OnDestroy {
         filePath: "privilege.json"
       }
     };
-    this.connectServ.read(sendDataUpdate)
+    if(navigator.onLine) {
+      this.connectServ.read(sendDataUpdate)
+    } else if (!navigator.onLine) {
+      this.connectServ.saveOfflineData('update_privilege', sendDataUpdate);
+    }
+  }
+
+  goToList() {
+    this.router.navigate(['privilege']);
   }
 
 }

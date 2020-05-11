@@ -167,10 +167,6 @@ export class ViewByIdUserComponent implements OnInit, OnDestroy {
           }).toString(CryptoJS.enc.Utf8);
           of(this.dataUpdate(paramsId, res[0].profileId, password)).pipe(takeUntil(this.subs)).subscribe(()=> {
             this.router.navigate(['/user']);
-            this.toastr.success('Update data user successfully', 'Done', {
-              timeOut: 10000,
-              positionClass: 'toast-bottom-center'
-            });
           })
         }
       });
@@ -181,6 +177,7 @@ export class ViewByIdUserComponent implements OnInit, OnDestroy {
   dataUpdate(paramsId, profileId, password) {
     let sendDataUpdate = {
       numberOfTable: 1,
+      response: "response-update-auth-profile-privilege",
       action: {
         table: "update",
         upload: true,
@@ -192,14 +189,22 @@ export class ViewByIdUserComponent implements OnInit, OnDestroy {
           table:"history_app",
           data: {
             date:  this.datePipe.transform(this.dateHistory, 'yyyy-MM-dd'),
+            time: this.datePipe.transform(this.dateHistory, 'h:mm:ss a'),
             description: "Updated data Privilege"
           },
           condition: {
             read: false,
             insertId: true,
-            processAddJoin: true
+            processAddJoin: true,
+            addMultiJoin: true,
           },
           response: "response-add-history",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
           result: null,
           sendCreateJoinId: {
             key: 0,
@@ -218,7 +223,13 @@ export class ViewByIdUserComponent implements OnInit, OnDestroy {
           condition: {
             read: false
           },
-          response: "response-delete-auth"
+          response: "response-update-auth",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         },
         {
           table: "profile",
@@ -230,7 +241,13 @@ export class ViewByIdUserComponent implements OnInit, OnDestroy {
           condition: {
             read: false
           },
-          response: "response-delete-auth"
+          response: "response-update-profile",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         },
         {
           table: "auth_profile_privilege",
@@ -240,9 +257,15 @@ export class ViewByIdUserComponent implements OnInit, OnDestroy {
           },
           data: "authId='"+this.dataUser.auth+"',privilegeId='"+this.dataUser.privilege+"',profileId='"+this.dataUser.profile+"'",
           condition: {
-            read: false
+            read: true
           },
-          response: "response-delete-auth-profile-privilege"
+          response: "response-update-auth-profile-privilege",
+          toast: {
+            name:  "response-update-auth-profile-privilege",
+            type: 'update',
+            messageToastSuccess: 'Update data user successfully',
+            messageToastError: 'Update data user not successfully'
+          },
         }
       ],
       createJoinId: [
@@ -255,7 +278,13 @@ export class ViewByIdUserComponent implements OnInit, OnDestroy {
             read: false,
             insertId: false
           },
-          response: "response-add-history-profile"
+          response: "response-add-history-profile",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         }
       ],
       read: {
@@ -277,10 +306,19 @@ export class ViewByIdUserComponent implements OnInit, OnDestroy {
       upload: {
         filePath: this.dataUser.image,
         selectedFile: this.dataUser.selectedFile,
-        beforeImage: this.dataUser.beforeImage
+        beforeImage: this.dataUser.beforeImage,
+        base64: this.imgURL
       }
     };
-    this.connectServ.read(sendDataUpdate)
+    if(navigator.onLine) {
+      this.connectServ.read(sendDataUpdate)
+    } else if (!navigator.onLine) {
+      this.connectServ.saveOfflineData('update_user', sendDataUpdate);
+    }
+  }
+
+  goToList() {
+    this.router.navigate(['user']);
   }
 
 }

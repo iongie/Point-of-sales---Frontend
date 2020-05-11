@@ -1,35 +1,33 @@
 import { NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { DashboardComponent } from './dashboard.component';
+import { BillAfterOrderComponent } from './bill-after-order.component';
 import { Routes, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import {DragDropModule} from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { AlertModule } from 'ngx-bootstrap/alert';
-import { ModalModule } from 'ngx-bootstrap/modal';
+import { NgxPrintModule } from 'ngx-print';
 import { ConnectServerService } from '../../services/connect-server/connect-server.service';
-import { PipeModule } from '../../pipe/pipe.module';
 
 const routes: Routes = [
   {
     path: '',
-    component: DashboardComponent,
+    component: BillAfterOrderComponent,
   }
 ];
 
 @NgModule({
-  declarations: [DashboardComponent],
+  declarations: [BillAfterOrderComponent],
   imports: [
     CommonModule,
     FormsModule,
     DragDropModule,
     AlertModule,
-    ModalModule.forRoot(),
+    NgxPrintModule,
     RouterModule.forChild(routes),
-    PipeModule
   ],
   providers: [
     ConnectServerService,
     DatePipe
   ]
 })
-export class DashboardModule { }
+export class BillAfterOrderModule { }

@@ -43,13 +43,25 @@ export const routes: Routes = [
           }
         ]
       },
-      
       {
         path: 'pay',
         children: [
           {
             path: ':id',
             loadChildren: () => import('./views/payment/payment.module').then(m => m.PaymentModule),
+            canActivate: [AuthGuard],
+            data: {
+              role: [1, 2]
+            }
+          }
+        ]
+      },
+      {
+        path: 'print-bill',
+        children: [
+          {
+            path: ':id',
+            loadChildren: () => import('./views/bill-after-order/bill-after-order.module').then(m => m.BillAfterOrderModule),
             canActivate: [AuthGuard],
             data: {
               role: [1, 2]
@@ -116,6 +128,14 @@ export const routes: Routes = [
       {
         path: 'order-status',
         loadChildren: () => import('./views/order-status/view-order-status/view-order-status.module').then(m => m.ViewOrderStatusModule),
+        canActivate: [AuthGuard],
+        data: {
+          role: [1, 2]
+        }
+      },
+      {
+        path: 'customize-dining-table',
+        loadChildren: () => import('./views/customize-dining-table/customize-dining-table.module').then(m => m.CustomizeDiningTableModule),
         canActivate: [AuthGuard],
         data: {
           role: [1, 2]

@@ -63,4 +63,15 @@ export const nav = [
     icon: 'icon-drop',
     role: [1]
   },
+  {
+    title: true,
+    name: 'Customize',
+    role: [1]
+  },
+  {
+    name: 'Dining table',
+    url: '/customize-dining-table',
+    icon: 'icon-drop',
+    role: [1]
+  },
 ];

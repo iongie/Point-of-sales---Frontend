@@ -1,0 +1,129 @@
+<div class="row justify-content-md-center mt-4 mb-4">
+  <div class="col-lg-4 col-md-12 border mb-4">
+    <div class="row justify-content-center mb-4">
+      <div class="col--3 border">
+        <button type="button" class="btn btn-primary btn-lg btn-block">Print</button>
+      </div>
+    </div>
+    <div class="invoice-POS" id="invoice-POS">
+      <div class="logo"></div>
+      <div class="info">
+        <h2 style="text-align: center; border-bottom: 1px solid black; max-width: 44mm;">SBISTechs Inc</h2>
+      </div>
+      <!--End Info-->
+    
+      <div id="mid">
+        <div class="info">
+          <h2 style="text-align: center; max-width: 44mm;">Contact Info</h2>
+          <p style="font-size: 8px;">
+            No# : {{printData.orderNumber}} <br>
+            Cashier : {{printData.displayName}} <br>
+            Tanggal : {{printData.date | date:'fullDate'}} <br>
+          </p>
+        </div>
+      </div>
+      <!--End Invoice Mid-->
+    
+      <div id="bot">
+        <div id="table">
+          <table>
+            <tr class="table-title">
+              <td>
+                <h2>
+                  Items
+                </h2>
+              </td>
+              <td class="Hours"><h2>Qty</h2></td>
+              <td class="Rate"><h2>Sub Total</h2></td>
+            </tr>
+    
+            <tr class="service" *ngFor="let order of printData.orderProduct">
+              <td class="table-item"><p class="item-text">
+                {{order.displayName}}
+              </p>
+              </td>
+              <td class="table-item"><p class="item-text">{{order.qty}}</p></td>
+              <td class="table-item"><p class="item-text">{{order.subTotal}}</p></td>
+            </tr>
+
+            <tr class="table-title">
+              <td></td>
+              <td class="Rate"><h2>PPN</h2></td>
+              <td class="payment"><h2>{{printData.ppn}}</h2></td>
+            </tr>
+    
+            <tr class="table-title">
+              <td></td>
+              <td class="Rate"><h2>Total</h2></td>
+              <td class="payment"><h2>{{printData.total}}</h2></td>
+            </tr>
+    
+          </table>
+        </div>
+        <!--End Table-->
+    
+        <div id="legal-copy">
+          <p class="legal" style="text-align: center; max-width: 44mm;"><strong>Thank you for your business!</strong>
+            Payment is expected within 31 days; please process this invoice within that time. There will be a 5% interest
+            charge per month on late invoices.
+          </p>
+        </div>
+    
+      </div>
+      <!--End InvoiceBot-->
+    </div>
+  </div>
+  <div class="col-lg-4 col-md-12 border mb-4">
+    <div class="row justify-content-center mb-4">
+      <div class="col--3 border">
+        <button type="button" class="btn btn-primary btn-lg btn-block">Print</button>
+      </div>
+    </div>
+    <div class="invoice-POS" id="invoice-POS">
+      <div class="logo"></div>
+      <div class="info">
+        <h2 style="text-align: center; border-bottom: 1px solid black; max-width: 44mm;">SBISTechs Inc</h2>
+      </div>
+      <!--End Info-->
+    
+      <div id="mid">
+        <div class="info">
+          <h2 style="text-align: center; max-width: 44mm;">Contact Info</h2>
+          <p style="font-size: 8px;">
+            No# : {{printData.orderNumber}} <br>
+            Cashier : {{printData.displayName}} <br>
+            Tanggal : {{printData.date | date:'fullDate'}} <br>
+          </p>
+        </div>
+      </div>
+      <!--End Invoice Mid-->
+    
+      <div id="bot">
+        <div id="table">
+          <table>
+            <tr class="table-title">
+              <td>
+                <h2>
+                  Items
+                </h2>
+              </td>
+              <td class="Hours"><h2>Qty</h2></td>
+            </tr>
+    
+            <tr class="service" *ngFor="let order of printData.orderProduct">
+              <td class="table-item"><p class="item-text">
+                {{order.displayName}}
+              </p>
+              </td>
+              <td class="table-item"><p class="item-text">{{order.qty}}</p></td>
+            </tr>
+    
+          </table>
+        </div>
+        <!--End Table-->
+    
+      </div>
+      <!--End InvoiceBot-->
+    </div>
+  </div>
+</div>

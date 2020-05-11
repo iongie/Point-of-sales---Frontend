@@ -27,21 +27,8 @@
       <div class="modal-body example-boundary">
         <div class="example-box" 
           *ngFor="let diningTable of diningTable; let i = index"
-          cdkDragBoundary=".example-boundary" 
-          cdkDrag
-          #item
-          (cdkDragEnded)="dragEnd($event)"
-          [style.top.px]="initialPosition.y"
-          [style.left.px]="initialPosition.x"
-          [style]="diningTable.diningStyle"
-          (click)="diningTableAction(diningTable)">
+          [ngStyle]="{transform: diningTable.diningTablePosition}">
           {{diningTable.diningTableName}}
-          <div class="example-handle" cdkDragHandle>
-            <svg width="24px" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path>
-              <path d="M0 0h24v24H0z" fill="none"></path>
-            </svg>
-          </div>
         </div>
       </div>
     </div>
@@ -50,7 +37,7 @@
 
 <div class="row mb-3 mt-3 justify-content-end">
   <div class="col-md-4">
-    <input type="text" placeholder="Search" class="form-control" name="filterData" id="filterData" [(ngModel)]="filterData" (ngModelChange)="actionFilter($event)">
+    <input type="text" placeholder="Search" class="form-control" name="filterData" id="filterData" [(ngModel)]="filterData">
   </div>
 </div>
 <div class="row">
@@ -69,7 +56,7 @@
   </ul>
 </div>
 <div class="row mt-5">
-  <div class="col-lg-6" *ngFor="let product of product; let i = index">
+  <div class="col-lg-6" *ngFor="let product of product| filter: filterData; let i = index">
     <div class="single_menu_list" style="cursor: pointer;">
       <img [src]="envImageUrl+product.image" alt="" (click)="orderProduct(product, 1)">
       <div class="menu_content">

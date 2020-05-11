@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import * as CryptoJS from 'crypto-js';
-import { Subject, of } from 'rxjs';
+import { Subject, of, Observable, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { CdkDragEnd, CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 
@@ -25,6 +25,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   dineInTableOrder: any = {};
   totalOrder: any = {};
   activeDineInTable = false;
+  filterData;
+
+  
+  dateHistory = new Date();
 
   envImageUrl= environment.image;
   activeOrderStatus = false;
@@ -33,12 +37,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   key = CryptoJS.enc.Utf8.parse(this.tokenCrypto);
   iv = CryptoJS.enc.Utf8.parse(this.tokenCrypto);
 
-  @ViewChild("item")
-  item: ElementRef;
-
-  initialPosition = { x: 100, y: 100 };
-  position = { ...this.initialPosition };
-  offset = { x: 0, y: 0 };
+  onlineEvent: Observable<Event>;
+  offlineEvent: Observable<Event>;
+  subscriptions: Subscription[] = [];
   constructor(
     public connectServ: ConnectServerService,
     private datePipe: DatePipe,
@@ -46,29 +47,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private router: Router
   ) { }
 
-  dragEnd(event: CdkDragEnd) {
-    const transform = this.item.nativeElement.style.transform;
-    let regex = /translate3d\(\s?(?<x>[-]?\d*)px,\s?(?<y>[-]?\d*)px,\s?(?<z>[-]?\d*)px\)/;
-    var values = regex.exec(transform);
-    console.log(transform);
-    this.diningTable.map(x => {
-      const data = {
-        diningTableId: x.diningTableId,
-        diningTableName: x.name,
-        diningStyle: "transform: "+transform,
-      }
-      return data;
-    })
- 
-  }
-
   ngOnInit(): void {
-    this.dataProduct();
-    this.readProduct();
-    this.dataOrderStatus();
-    this.readOrderStatus();
-    this.dataDIningTable();
-    this.readDiningTable();
+    this.statusConnection();
+    if(navigator.onLine) {
+      this.dataProduct();
+      this.readProduct();
+      this.dataOrderStatus();
+      this.readOrderStatus();
+      this.dataDIningTable();
+      this.readDiningTable();
+    } else if (!navigator.onLine) {
+      this.readOfflineDataOrderDiningTable();
+      this.readOfflineDataOrderOrderStatus();
+      this.readOfflineDataOrderProduct();
+    }
+    
     this.orders;
     this.statusOrder = null;
   }
@@ -76,6 +69,46 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subs.next();
     this.subs.complete();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  statusConnection(){
+    this.onlineEvent = fromEvent(window, 'online');
+    this.offlineEvent = fromEvent(window, 'offline');
+    this.subscriptions.push(this.onlineEvent.subscribe(e => {
+      this.dataProduct();
+      this.readProduct();
+      this.dataOrderStatus();
+      this.readOrderStatus();
+      this.dataDIningTable();
+      this.readDiningTable();
+    }));
+
+    this.subscriptions.push(this.offlineEvent.subscribe(e => {
+      this.readOfflineDataOrderDiningTable();
+      this.readOfflineDataOrderOrderStatus();
+      this.readOfflineDataOrderProduct();
+    }));
+  }
+  
+  offlineData(key, changeData) {
+    let encryptedKey = CryptoJS.AES.encrypt(
+    JSON.stringify(key), this.key, {
+      keySize: 16,
+      iv: this.iv,
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
+    });
+
+    let encryptedValue = CryptoJS.AES.encrypt(
+    JSON.stringify(changeData), this.key, {
+      keySize: 16,
+      iv: this.iv,
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
+    });
+
+    localStorage.setItem(encryptedKey.toString(), encryptedValue.toString());
   }
 
   dataProduct() {
@@ -113,7 +146,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
           }
           return data;
         })
+      this.offlineData('order_view_product', this.product);
     })
+  }
+  
+  readOfflineDataOrderProduct() {
+    let encryptedKey = CryptoJS.AES.encrypt(
+    JSON.stringify('order_view_product'), this.key, {
+      keySize: 16,
+      iv: this.iv,
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    const localStorageKeyLocalStorage = localStorage.getItem(encryptedKey.toString());
+    console.log(localStorageKeyLocalStorage);
+    
+    if (localStorageKeyLocalStorage !== null) {
+      let decryptedValue = CryptoJS.AES.decrypt(
+      localStorageKeyLocalStorage, this.key, {
+        keySize: 16,
+        iv: this.iv,
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+      });
+      const dataOfLocal = JSON.parse(decryptedValue.toString(CryptoJS.enc.Utf8));
+      this.product = dataOfLocal;
+    }
   }
 
   dataOrderStatus() {
@@ -142,7 +200,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
         return data;
       })
+      this.offlineData('order_view_order_status', this.orderStatus);
     })
+  }
+
+  readOfflineDataOrderOrderStatus() {
+    let encryptedKey = CryptoJS.AES.encrypt(
+    JSON.stringify('order_view_order_status'), this.key, {
+      keySize: 16,
+      iv: this.iv,
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    const localStorageKeyLocalStorage = localStorage.getItem(encryptedKey.toString());
+    console.log(localStorageKeyLocalStorage);
+    
+    if (localStorageKeyLocalStorage !== null) {
+      let decryptedValue = CryptoJS.AES.decrypt(
+      localStorageKeyLocalStorage, this.key, {
+        keySize: 16,
+        iv: this.iv,
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+      });
+      const dataOfLocal = JSON.parse(decryptedValue.toString(CryptoJS.enc.Utf8));
+      this.orderStatus = dataOfLocal;
+    }
   }
 
   dataDIningTable() {
@@ -167,16 +250,37 @@ export class DashboardComponent implements OnInit, OnDestroy {
         const data = {
           diningTableId: x.diningTableId,
           diningTableName: x.name,
-          diningStyle: "transform: translate3d(366px, -15px, 0px) translate3d(-94px, -93px, 0px)",
+          diningTablePosition: x.position,
         }
         return data;
       });
-      console.log(this.diningTable);
-      
+      this.offlineData('order_view_dining_table', this.diningTable);
     })
   }
 
-  
+  readOfflineDataOrderDiningTable() {
+    let encryptedKey = CryptoJS.AES.encrypt(
+    JSON.stringify('order_view_dining_table'), this.key, {
+      keySize: 16,
+      iv: this.iv,
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    const localStorageKeyLocalStorage = localStorage.getItem(encryptedKey.toString());
+    console.log(localStorageKeyLocalStorage);
+    
+    if (localStorageKeyLocalStorage !== null) {
+      let decryptedValue = CryptoJS.AES.decrypt(
+      localStorageKeyLocalStorage, this.key, {
+        keySize: 16,
+        iv: this.iv,
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+      });
+      const dataOfLocal = JSON.parse(decryptedValue.toString(CryptoJS.enc.Utf8));
+      this.diningTable = dataOfLocal;
+    }
+  }
 
   orderStatusAction(index, orderStatus) {
     this.orderStatus[index].orderStatusActive = true;

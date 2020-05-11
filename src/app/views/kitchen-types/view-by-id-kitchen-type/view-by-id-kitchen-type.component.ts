@@ -92,10 +92,6 @@ export class ViewByIdKitchenTypeComponent implements OnInit, OnDestroy {
         }).toString(CryptoJS.enc.Utf8);
         of(this.dataUpdate(paramsId, res[0].profileId)).pipe(takeUntil(this.subs)).subscribe(() => {
           this.router.navigate(['/kitchen-type']);
-          this.toastr.success('Update data kitchen-type successfully', 'Done', {
-            timeOut: 1000,
-            positionClass: 'toast-bottom-center'
-          });
         })
       });
     });
@@ -105,6 +101,7 @@ export class ViewByIdKitchenTypeComponent implements OnInit, OnDestroy {
   dataUpdate(paramsId, profileId) {
     let sendDataUpdate = {
       numberOfTable: 1,
+      response: "response-update-kitchen-type",
       action: {
         table: "update",
         upload: false,
@@ -116,14 +113,22 @@ export class ViewByIdKitchenTypeComponent implements OnInit, OnDestroy {
           table: "history_app",
           data: {
             date: this.datePipe.transform(this.dateHistory, 'yyyy-MM-dd'),
+            time: this.datePipe.transform(this.dateHistory, 'h:mm:ss a'),
             description: "Updated data kitchen-type"
           },
           condition: {
             read: false,
             insertId: true,
-            processAddJoin: true
+            processAddJoin: true,
+            addMultiJoin: true,
           },
           response: "response-add-history",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
           result: null,
           sendCreateJoinId: {
             key: 0,
@@ -142,7 +147,13 @@ export class ViewByIdKitchenTypeComponent implements OnInit, OnDestroy {
           condition: {
             read: false
           },
-          response: "response-update-kitchen-type"
+          response: "response-update-kitchen-type",
+          toast: {
+            name:  "response-update-kitchen-type",
+            type: 'update',
+            messageToastSuccess: 'update data kitchen type successfully',
+            messageToastError: 'update data kitchen type not successfully'
+          }
         }
       ],
       createJoinId: [
@@ -155,7 +166,13 @@ export class ViewByIdKitchenTypeComponent implements OnInit, OnDestroy {
             read: false,
             insertId: false
           },
-          response: "response-add-history-profile"
+          response: "response-add-history-profile",
+          toast: {
+            name:  null,
+            type: null,
+            messageToastSuccess: null,
+            messageToastError: null
+          },
         }
       ],
       read: {
@@ -166,7 +183,11 @@ export class ViewByIdKitchenTypeComponent implements OnInit, OnDestroy {
         filePath: "kitchenType.json"
       }
     };
-    this.connectServ.read(sendDataUpdate)
+    if(navigator.onLine) {
+      this.connectServ.read(sendDataUpdate)
+    } else if (!navigator.onLine) {
+      this.connectServ.saveOfflineData('update_kitchen_type', sendDataUpdate);
+    }
   }
 
   goToList() {
